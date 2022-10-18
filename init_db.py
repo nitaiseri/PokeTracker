@@ -62,9 +62,9 @@ def run_query(data_base, queries):
     except pymysql.Error as e:
         print(e.args[1], file=sys.stderr)
 
-def create_insert_query(table_name, vals, **kwargs):
+def create_insert_query(table_name, vals, has_id):
     return f'INSERT INTO {table_name}\
-            VALUES({"null, " if kwargs["null"] else ""}{str(vals)[1:-1]});'
+            VALUES({"" if has_id else "null, "}{str(vals)[1:-1]});'
 
 def init_db_and_tables():
     create_db(DB_NAME)
@@ -75,18 +75,18 @@ def get_pokemon_values(pokemon_object):
 
 def insert_to_table(pokemon_object, cursor):
     poke_values = get_pokemon_values(pokemon_object)
-    query = create_insert_query(POKEMON_TABLE, poke_values, null=False)
+    query = create_insert_query(POKEMON_TABLE, poke_values, True)
     cursor.execute(query)
     for trainer in pokemon_object["ownedBy"]:
         trainer_values = [trainer["name"], trainer["town"]]
-        query = create_insert_query(TRAINER_TABLE, trainer_values, null=True)
+        query = create_insert_query(TRAINER_TABLE, trainer_values, False)
         try:
             cursor.execute(query)
         except:
             pass
         cursor.execute(f"SELECT trainer_id FROM trainer WHERE name='{trainer['name']}' AND town='{trainer['town']}'")
         trainer_id = cursor.fetchall()[0]["trainer_id"]
-        query = create_insert_query(POKEMON_TRAINER_TABLE, [pokemon_object["id"], trainer_id], null=False)
+        query = create_insert_query(POKEMON_TRAINER_TABLE, [pokemon_object["id"], trainer_id], True)
         cursor.execute(query)
 
 def insert_all_json_data(data_base, json_path):
