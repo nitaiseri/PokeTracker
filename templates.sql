@@ -15,12 +15,13 @@ CREATE TABLE trainer(
     trainer_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(20),
     town VARCHAR(20),
-    UNIQUE KEY full_name (name , town)
+    UNIQUE KEY(name , town)
 );
 
 CREATE TABLE pokemon_trainer(
     pokemon_id INT,
     trainer_id INT,
+    PRIMARY KEY(pokemon_id , trainer_id),
     FOREIGN KEY(pokemon_id) REFERENCES pokemon(pokemon_id),
     FOREIGN KEY(trainer_id) REFERENCES trainer(trainer_id)
 );
