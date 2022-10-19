@@ -1,11 +1,16 @@
+from constants.consts import *
+from constants.queries import *
 from unicodedata import name
 import pymysql
 import sys
 import json
 import requests
-from constants.queries import *
-from constants.consts import *
+import os
+
 from fastapi import HTTPException
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
 
 
 def create_db(name):
@@ -54,12 +59,13 @@ def init_db():
     # create_db(DB_NAME)
     run_query(DB_NAME, tables_creation_queries)
 
+
 def init_type_table(cursor):
-    result = requests.get(TYPES_URL)        
+    result = requests.get(TYPES_URL)
     data = result.json()
     if result.status_code == 200:
-        type_list = data.results
-        type_values = list(map(lambda type: type[name], type_list))
+        type_list = data["results"]
+        type_values = list(map(lambda type: type["name"], type_list))
         query = create_insert_query(
             table_name=TYPE_TABLE, values=type_values, has_id=False)
 
