@@ -1,33 +1,9 @@
 import pymysql
 import sys
 import json
-
-DB_NAME = "PokeTracker"
-POKEMON_TABLE = "Pokemon"
-TRAINER_TABLE = "Trainer"
-POKEMON_TRAINER_TABLE = "Pokemon_Trainer"
-
-tables_creation_queries = ["CREATE TABLE pokemon(\
-                                pokemon_id INT NOT NULL PRIMARY KEY,\
-                                name VARCHAR(20),\
-                                type VARCHAR(20),\
-                                height INT,\
-                                weight INT\
-                            );",
-                           "CREATE TABLE trainer(\
-                                trainer_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,\
-                                name VARCHAR(20),\
-                                town VARCHAR(20),\
-                                UNIQUE KEY full_name (name , town)\
-                            );",
-                           "CREATE TABLE pokemon_trainer(\
-                                pokemon_id INT,\
-                                trainer_id INT,\
-                                PRIMARY KEY(pokemon_id , trainer_id),\
-                                FOREIGN KEY(pokemon_id) REFERENCES pokemon(pokemon_id),\
-                                FOREIGN KEY(trainer_id) REFERENCES trainer(trainer_id)\
-                            );"]
-# HELLO BAD CODE PRACTICE
+import requests
+from constants.queries import *
+from constants.consts import *
 
 def create_db(name):
     try:
@@ -65,15 +41,30 @@ def run_query(data_base, queries):
     except pymysql.Error as e:
         print(e.args[1], file=sys.stderr)
 
-
 def create_insert_query(table_name, vals, has_id):
     return f'INSERT INTO {table_name}\
             VALUES({"" if has_id else "null, "}{str(vals)[1:-1]});'
 
 
-def init_db_and_tables():
+def init_db():
     create_db(DB_NAME)
-    run_query(DB_NAME, tables_creation_queries)
+    run_query(DB_NAME, tables_creation_queries)    
+
+def init_type_table():
+    data = requests.get(TYPES_URL)
+
+def init_pokemon_table():
+    pass
+
+def init_trainer_table():
+    pass
+
+def insert_data_to_tables():
+    init_type_table()
+    init_pokemon_table() #Init pokemon and pokemon-type tables
+    init_trainer_table() #Init trainer and pokemon-trainer tables
+    
+
 
 
 def get_pokemon_values(pokemon_object):
@@ -120,5 +111,5 @@ def insert_all_json_data(data_base, json_path):
 
 
 if __name__ == "__main__":
-    init_db_and_tables()
+    init_db()
     insert_all_json_data(DB_NAME, "pokemons.json")
