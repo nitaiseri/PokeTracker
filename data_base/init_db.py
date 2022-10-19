@@ -1,9 +1,12 @@
+from unicodedata import name
 import pymysql
 import sys
 import json
 import requests
 from constants.queries import *
 from constants.consts import *
+from fastapi import HTTPException
+
 
 def create_db(name):
     try:
@@ -41,30 +44,56 @@ def run_query(data_base, queries):
     except pymysql.Error as e:
         print(e.args[1], file=sys.stderr)
 
-def create_insert_query(table_name, vals, has_id):
+
+def create_insert_query(table_name, values, has_id):
     return f'INSERT INTO {table_name}\
-            VALUES({"" if has_id else "null, "}{str(vals)[1:-1]});'
+            VALUES({"" if has_id else "null, "}{str(values)[1:-1]});'
 
 
 def init_db():
     create_db(DB_NAME)
-    run_query(DB_NAME, tables_creation_queries)    
+    run_query(DB_NAME, tables_creation_queries)
 
-def init_type_table():
-    data = requests.get(TYPES_URL)
+
+def init_type_table(cursor):
+    result = requests.get(TYPES_URL)
+    data = result.json()
+    if result.status_code == 200:
+        type_list = data.results
+        type_values = list(map(lambda type: type[name], type_list))
+        query = create_insert_query(
+            table_name=TYPE_TABLE, values=type_values, has_id=False)
+
+        cursor.execute(query)
+    else:
+        raise HTTPException(status_code=404, detail="erorr in api")
+
 
 def init_pokemon_table():
     pass
 
+
 def init_trainer_table():
     pass
 
-def insert_data_to_tables():
-    init_type_table()
-    init_pokemon_table() #Init pokemon and pokemon-type tables
-    init_trainer_table() #Init trainer and pokemon-trainer tables
-    
 
+def insert_data_to_tables():
+    try:
+        connection = pymysql.connect(
+            host="localhost",
+            user="root",
+            password="",
+            db=DB_NAME,
+            charset="utf8",
+            cursorclass=pymysql.cursors.DictCursor
+        )
+        with connection.cursor() as cursor:
+            init_type_table(cursor)
+            init_pokemon_table()  # Init pokemon and pokemon-type tables
+            init_trainer_table()  # Init trainer and pokemon-trainer tables
+        connection.commit()
+    except pymysql.Error as e:
+        print(e.args[1], file=sys.stderr)
 
 
 def get_pokemon_values(pokemon_object):
