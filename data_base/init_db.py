@@ -51,12 +51,11 @@ def create_insert_query(table_name, values, has_id):
 
 
 def init_db():
-    create_db(DB_NAME)
+    # create_db(DB_NAME)
     run_query(DB_NAME, tables_creation_queries)
 
-
 def init_type_table(cursor):
-    result = requests.get(TYPES_URL)
+    result = requests.get(TYPES_URL)        
     data = result.json()
     if result.status_code == 200:
         type_list = data.results
@@ -141,4 +140,5 @@ def insert_all_json_data(data_base, json_path):
 
 if __name__ == "__main__":
     init_db()
-    insert_all_json_data(DB_NAME, "pokemons.json")
+    insert_data_to_tables()
+    # insert_all_json_data(DB_NAME, "pokemons.json")
