@@ -6,8 +6,6 @@ import pymysql
 import sys
 import json
 import requests
-import re
-import os
 
 from fastapi import HTTPException
 
@@ -54,9 +52,10 @@ def create_insert_query(table_name, rows, has_id):
         query += f'({id}{row_string}),'
     return query[:-1] + ";"
     
-def init_db():
-    # create_db(DB_NAME)
+def run():
+    create_db(DB_NAME)
     execute_queries(DB_NAME, tables_creation_queries)
+    init_tables_from_api()
 
 def init_tables_from_api():
     try:
@@ -69,7 +68,7 @@ def init_tables_from_api():
             cursorclass=pymysql.cursors.DictCursor
         )
         with connection.cursor() as cursor:
-            # init_type_table(cursor)
+            init_type_table(cursor)
             init_pokemon_table(cursor)  # Init pokemon and pokemon-type tables
             # init_tables_from_json(cursor, JSON_PATH)
             # init_trainer_table()  # Init trainer and pokemon-trainer tables
@@ -95,10 +94,20 @@ def init_pokemon_table(cursor):
     if result.status_code != 200:
         raise HTTPException(status_code=404, detail="erorr in api")
     dto_pokemon = DtoPokemon(pokemons_object=result.json())
-    while dto_pokemon.next_url != "null":
-        for pokemon_object in dto_pokemon.results:
-            pokemon = get_pokemon(pokemon_object["url"])
-            a=1
+    values_pokemon_table = []
+    values_pokemon_types_table = []
+    for pokemon_object in dto_pokemon.results:
+        pokemon = get_pokemon(pokemon_object["url"])
+        values_pokemon_table.append([pokemon.id,pokemon.name,pokemon.height,pokemon.weight])
+        for type in pokemon.types_ids:
+            values_pokemon_types_table.append([pokemon.id,type])
+
+    query_pokemon_table = create_insert_query(table_name=POKEMON_TABLE, rows=values_pokemon_table, has_id=True)
+    query_pokemon_type_table = create_insert_query(table_name=POKEMON_TYPE_TABLE, rows=values_pokemon_types_table, has_id=True)
+    cursor.execute(query_pokemon_table)
+    cursor.execute(query_pokemon_type_table)
+
+        
 
 def get_pokemon(url):
     result = requests.get(url)
@@ -176,6 +185,6 @@ def insert_pokemon_data_to_tables(pokemon_object, cursor):
 
 
 if __name__ == "__main__":
-    init_db()
-    init_tables_from_api()
+    run()
+    
     # insert_all_json_data(DB_NAME, "pokemons.json")
