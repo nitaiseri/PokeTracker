@@ -1,17 +1,15 @@
 from constants.consts import *
 from constants.queries import *
+from dtos import *
 from unicodedata import name
 import pymysql
 import sys
 import json
 import requests
+import re
 import os
 
 from fastapi import HTTPException
-current = os.path.dirname(os.path.realpath(__file__))
-parent = os.path.dirname(current)
-sys.path.append(parent)
-
 
 def create_db(name):
     try:
@@ -29,14 +27,13 @@ def create_db(name):
     except pymysql.Error as e:
         print(e.args[1], file=sys.stderr)
 
-
-def run_query(data_base, queries):
+def execute_queries(data_base_name, queries):
     try:
         connection = pymysql.connect(
             host="localhost",
             user="root",
             password="",
-            db=data_base,
+            db=data_base_name,
             charset="utf8",
             cursorclass=pymysql.cursors.DictCursor
         )
@@ -49,40 +46,19 @@ def run_query(data_base, queries):
     except pymysql.Error as e:
         print(e.args[1], file=sys.stderr)
 
-
-def create_insert_query(table_name, values, has_id):
-    return f'INSERT INTO {table_name}\
-            VALUES({"" if has_id else "null, "}{str(values)[1:-1]});'
-
-
+def create_insert_query(table_name, rows, has_id):
+    query = f'INSERT INTO {table_name} VALUES'
+    id = "" if has_id else "null, "
+    for row in rows:
+        row_string = str(row)[1:-1]
+        query += f'({id}{row_string}),'
+    return query[:-1] + ";"
+    
 def init_db():
     # create_db(DB_NAME)
-    run_query(DB_NAME, tables_creation_queries)
+    execute_queries(DB_NAME, tables_creation_queries)
 
-
-def init_type_table(cursor):
-    result = requests.get(TYPES_URL)
-    data = result.json()
-    if result.status_code == 200:
-        type_list = data["results"]
-        type_values = list(map(lambda type: type["name"], type_list))
-        query = create_insert_query(
-            table_name=TYPE_TABLE, values=type_values, has_id=False)
-
-        cursor.execute(query)
-    else:
-        raise HTTPException(status_code=404, detail="erorr in api")
-
-
-def init_pokemon_table():
-    pass
-
-
-def init_trainer_table():
-    pass
-
-
-def insert_data_to_tables():
+def init_tables_from_api():
     try:
         connection = pymysql.connect(
             host="localhost",
@@ -93,22 +69,94 @@ def insert_data_to_tables():
             cursorclass=pymysql.cursors.DictCursor
         )
         with connection.cursor() as cursor:
-            init_type_table(cursor)
-            init_pokemon_table()  # Init pokemon and pokemon-type tables
-            init_trainer_table()  # Init trainer and pokemon-trainer tables
+            # init_type_table(cursor)
+            init_pokemon_table(cursor)  # Init pokemon and pokemon-type tables
+            # init_tables_from_json(cursor, JSON_PATH)
+            # init_trainer_table()  # Init trainer and pokemon-trainer tables
         connection.commit()
     except pymysql.Error as e:
         print(e.args[1], file=sys.stderr)
 
-
-def get_pokemon_values(pokemon_object):
-    return [pokemon_object["id"], pokemon_object["name"], pokemon_object["type"], pokemon_object["height"], pokemon_object["weight"]]
-
-
-def insert_to_table(pokemon_object, cursor):
-    poke_values = get_pokemon_values(pokemon_object)
-    query = create_insert_query(POKEMON_TABLE, poke_values, True)
+def init_type_table(cursor):
+    result = requests.get(TYPES_URL)
+    if result.status_code != 200:
+        raise HTTPException(status_code=404, detail="erorr in api")
+    data = result.json()
+    type_list = data["results"]
+    type_values = []
+    for type in type_list:
+        id = int(type["url"].split("/")[-2])
+        type_values.append([id, type["name"]])
+    query = create_insert_query(table_name=TYPE_TABLE, rows=type_values, has_id=True)
     cursor.execute(query)
+
+def init_pokemon_table(cursor):
+    result = requests.get(POKEMONS_URL)
+    if result.status_code != 200:
+        raise HTTPException(status_code=404, detail="erorr in api")
+    dto_pokemon = DtoPokemon(pokemons_object=result.json())
+    while dto_pokemon.next_url != "null":
+        for pokemon_object in dto_pokemon.results:
+            pokemon = get_pokemon(pokemon_object["url"])
+            a=1
+
+def get_pokemon(url):
+    result = requests.get(url)
+    if result.status_code != 200:
+        raise HTTPException(status_code=404, detail="erorr in api")
+    return Pokemon(pokemon_object=result.json())
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def init_tables_from_json(cursor, json_path):
+    with open(json_path) as f:
+        data = json.load(f)
+    for pokemon in data:
+        insert_pokemon_data_to_tables(pokemon, cursor)
+
+def init_trainer_table():
+    pass
+
+
+
+def get_pokemon_type_list(pokemon_id):
+    result = requests.get(POKEMONS_URL + pokemon_id)
+    data = result.json()
+    return [t["type"]["name"] for t in data["types"]]
+
+def insert_pokemon_data_to_tables(pokemon_object, cursor):
+    pokemon = Pokemon(pokemon_object)
+    pokemon_query = create_insert_query(POKEMON_TABLE, [pokemon.get_items()], True)
+    cursor.execute(pokemon_query)
+    types = get_pokemon_type_list(pokemon.get_id())
+    types_id = [cursor.excute(f'SELECT type_id FROM {TYPE_TABLE} WHERE name={name}') for name in types]
+    # types_query = create_insert_query(TYPE_TABLE, , False)
+    # cursor.execute(types_query)
     for trainer in pokemon_object["ownedBy"]:
         trainer_values = [trainer["name"], trainer["town"]]
         query = create_insert_query(TRAINER_TABLE, trainer_values, False)
@@ -124,27 +172,10 @@ def insert_to_table(pokemon_object, cursor):
         cursor.execute(query)
 
 
-def insert_all_json_data(data_base, json_path):
-    with open(json_path) as f:
-        data = json.load(f)
-    try:
-        connection = pymysql.connect(
-            host="localhost",
-            user="root",
-            password="",
-            db=data_base,
-            charset="utf8",
-            cursorclass=pymysql.cursors.DictCursor
-        )
-        with connection.cursor() as cursor:
-            for pokemon in data:
-                insert_to_table(pokemon, cursor)
-            connection.commit()
-    except pymysql.Error as e:
-        print(e.args[1], file=sys.stderr)
+
 
 
 if __name__ == "__main__":
     init_db()
-    insert_data_to_tables()
+    init_tables_from_api()
     # insert_all_json_data(DB_NAME, "pokemons.json")

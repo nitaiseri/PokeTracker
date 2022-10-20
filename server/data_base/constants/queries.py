@@ -20,7 +20,7 @@ tables_creation_queries = ["CREATE TABLE pokemon(\
                                 FOREIGN KEY(trainer_id) REFERENCES trainer(trainer_id)\
                             );",
                             "CREATE TABLE type(\
-                                type_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,\
+                                type_id INT NOT NULL PRIMARY KEY,\
                                 name VARCHAR(20)\
                             );",
                             "CREATE TABLE pokemon_type(\
