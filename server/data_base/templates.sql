@@ -1,15 +1,14 @@
 use poketracker;
 drop table pokemon_trainer;
-drop table pokemon_type;
-drop table pokemon;
+-- drop table pokemon_type;
+-- drop table pokemon;
 drop table trainer;
-drop table type;
+-- drop table type;
 
 
 -- CREATE TABLE pokemon(
 --     pokemon_id INT NOT NULL PRIMARY KEY,
 --     name VARCHAR(20),
---     type VARCHAR(20),
 --     height INT,
 --     weight INT  
 -- );

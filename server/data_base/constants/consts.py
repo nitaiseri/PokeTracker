@@ -5,7 +5,7 @@ TYPE_TABLE = "Type"
 POKEMON_TRAINER_TABLE = "Pokemon_Trainer"
 POKEMON_TYPE_TABLE = "Pokemon_Type"
 
-JSON_PATH = "data_base/pokemons.json"
+JSON_PATH = "server/data_base/pokemons.json"
 
 # URL's:
 
