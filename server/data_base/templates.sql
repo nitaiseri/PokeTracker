@@ -1,8 +1,8 @@
 use poketracker;
-drop table pokemon_trainer;
+-- drop table pokemon_trainer;
 -- drop table pokemon_type;
 -- drop table pokemon;
-drop table trainer;
+-- drop table trainer;
 -- drop table type;
 
 
@@ -41,5 +41,50 @@ drop table trainer;
 --     FOREIGN KEY(type_id) REFERENCES type(type_id)
 -- );
 
+
+-- SELECT MAX(weight) AS FattestPokemon
+-- FROM Pokemon;
+
+-- Ex 1
+-- SELECT name AS FattestPokemon
+-- FROM Pokemon
+-- WHERE weight = (
+--     SELECT MAX(weight)
+--     from Pokemon)
+
+-- Ex2
+-- SELECT p.name
+-- FROM pokemon as p, type as t, pokemon_type as pt
+-- WHERE p.pokemon_id = pt.pokemon_id AND 
+--       t.type_id = pt.type_id
+--       AND t.name = "grass"
+
+-- EX3
+-- SELECT t.name
+-- FROM trainer as t, pokemon as p, pokemon_trainer as pt
+-- WHERE p.pokemon_id = pt.pokemon_id AND 
+--       t.trainer_id = pt.trainer_id
+--       AND p.name = "gengar"
+
+-- EX4
+-- SELECT p.name
+-- FROM trainer as t, pokemon as p, pokemon_trainer as pt
+-- WHERE p.pokemon_id = pt.pokemon_id AND 
+--       t.trainer_id = pt.trainer_id
+--       AND t.name = "Loga"
+
+--  Ex5
+
+-- CREATE VIEW num_pokes AS
+-- SELECT p.name, COUNT(*) as num
+--         FROM trainer as t, pokemon as p, pokemon_trainer as pt
+--         WHERE p.pokemon_id = pt.pokemon_id AND 
+--         t.trainer_id = pt.trainer_id
+--         GROUP BY p.pokemon_id;
+
+-- SELECT name AS Most_Owned
+-- FROM num_pokes
+-- WHERE num = (SELECT MAX(num)
+--             from num_pokes)
 
 
