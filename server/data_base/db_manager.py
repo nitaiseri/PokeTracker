@@ -1,6 +1,8 @@
 import pymysql
-from constants.consts import *
-from constants.queries import *
+import os
+from data_base.constants.consts import *
+from data_base.constants.queries import *
+from data_base.db_utils import *
 
 class DB_Manager:
     def __init__(self):
@@ -38,6 +40,25 @@ class DB_Manager:
             cursor.execute(CREATE_VIEW_OF_NUMS_OWNED_POKEMONS)
             cursor.execute(SELECT_MOST_OWNED_POKEMON)
             return cursor.fetchall() 
+    
+    def get_pokemon(self, pokemon_name):
+        with self.connection.cursor() as cursor:
+            cursor.execute(GET_POKEMON.format(name=pokemon_name))
+            return cursor.fetchall() 
+
+    def add_new_trainer(self, name, town):
+        new_id = self.get_new_trainer_id()
+        with self.connection.cursor() as cursor:
+                trainer_values = [new_id, name, town]
+                cursor.execute(create_insert_query(TRAINER_TABLE, [trainer_values]))
+                return cursor.fetchall() 
+
+    def get_new_trainer_id(self):
+        all_ids = None
+        with self.connection.cursor() as cursor:
+            cursor.execute(SELECT_MAX_TRAINER_ID)
+            return cursor.fetchone()["max_id"] + 1
+
 
 db_manager = DB_Manager()
-print(db_manager.get_most_owned_pokemon())
+print(db_manager.get_new_trainer_id())

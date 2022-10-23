@@ -30,6 +30,7 @@ TABLES_CREATOR_QUERIES = ["CREATE TABLE pokemon(\
                                 FOREIGN KEY(type_id) REFERENCES type(type_id)\
                             );"]
 
+########### Ex's  queries###########
 SELECT_HEAVIEST_POKEMON ="SELECT pokemon_id, name\
                           FROM Pokemon\
                           WHERE weight = (\
@@ -64,3 +65,11 @@ SELECT_MOST_OWNED_POKEMON = "SELECT name AS Most_Owned\
                             FROM num_pokes\
                             WHERE num = (SELECT MAX(num)\
                                         FROM num_pokes);"
+                        
+########### Route  queries###########
+
+GET_POKEMON = "SELECT *\
+               FROM pokemon\
+                WHERE name = '{name}'"
+
+SELECT_MAX_TRAINER_ID = 'SELECT MAX(trainer_id) AS max_id FROM trainer'

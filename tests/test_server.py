@@ -2,7 +2,6 @@ from urllib import response
 from fastapi.testclient import TestClient
 from unittest import mock
 import sys
-sys.path.append("..")
 from server.server import app
 
 client = TestClient(app)
