@@ -75,7 +75,7 @@ use poketracker;
 
 --  Ex5
 
--- CREATE VIEW num_pokes AS
+-- CREATE OR REPLACE VIEW num_pokes AS
 -- SELECT p.name, COUNT(*) as num
 --         FROM trainer as t, pokemon as p, pokemon_trainer as pt
 --         WHERE p.pokemon_id = pt.pokemon_id AND 
@@ -87,4 +87,5 @@ use poketracker;
 -- WHERE num = (SELECT MAX(num)
 --             from num_pokes)
 
+-- CREATE OR REPLACE VIEW num_pokes AS                            SELECT p.name, COUNT(*) as num                                    FROM trainer as t, pokemon as p, pokemon_trainer as pt                                    WHERE p.pokemon_id = pt.pokemon_id AND                                    t.trainer_id = pt.trainer_id                                    GROUP BY p.pokemon_id;                                                        SELECT name AS Most_Owned                            FROM num_pokes                            WHERE num = (SELECT MAX(num)                                        FROM num_pokes);
 

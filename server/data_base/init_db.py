@@ -136,7 +136,7 @@ def init_tables_from_json(cursor, json_path):
 
 def run():
     create_db(data_base_name = DB_NAME)
-    execute_queries(queries = tables_creation_queries)
+    execute_queries(queries = TABLES_CREATOR_QUERIES)
     init_tables()
 
 
