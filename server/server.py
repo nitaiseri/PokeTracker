@@ -1,5 +1,3 @@
-# from functools import cache
-from os import stat
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Request, status, Response
