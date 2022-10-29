@@ -33,12 +33,12 @@ def get_pokemons_by_parameters(type=None, trainer_name=None):
     return pokemons
 
                  
-@app.post('/trainers/', status_code=status.HTTP_200_OK) # Add a trainer
+@app.post('/trainers', status_code=status.HTTP_200_OK) # Add a trainer
 async def add_trainer(trainer:Request, respone:Response):
     raw_new_trainer = await trainer.json()
     try:
         new_trainer = Trainer(raw_new_trainer)
-        db_manager.add_new_trainer(new_trainer.name, new_trainer.town)
+        return db_manager.add_new_trainer(new_trainer.name, new_trainer.town)
     except:
     
         pass

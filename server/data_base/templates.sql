@@ -86,3 +86,5 @@ use poketracker;
 -- FROM num_pokes
 -- WHERE num = (SELECT MAX(num)
 --             from num_pokes)
+SELECT *
+FROM trainer

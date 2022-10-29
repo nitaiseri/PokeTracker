@@ -51,7 +51,9 @@ class DB_Manager:
         with self.connection.cursor() as cursor:
                 trainer_values = [new_id, name, town]
                 cursor.execute(create_insert_query(TRAINER_TABLE, [trainer_values]))
-                return cursor.fetchall() 
+                new_trainer = {"id": new_id, "name": name, "town": town}
+                self.connection.commit()
+                return new_trainer
 
     def get_new_trainer_id(self):
         all_ids = None
