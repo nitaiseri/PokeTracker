@@ -73,3 +73,18 @@ GET_POKEMON = "SELECT *\
                 WHERE name = '{name}'"
 
 SELECT_MAX_TRAINER_ID = 'SELECT MAX(trainer_id) AS max_id FROM trainer'
+
+SELECT_POKEMONS_BY_TRAINER_AND_TYPE = "SELECT p.name\
+                                        FROM (SELECT * FROM trainer WHERE name = '{trainer_name}') as t,\
+                                            (SELECT p.name, p.pokemon_id\
+                                                FROM pokemon AS p, pokemon_type AS pt, type AS t\
+                                                WHERE t.name = '{type}' AND\
+                                                    p.pokemon_id = pt.pokemon_id AND\
+                                                    pt.type_id = t.type_id) as p,\
+                                                pokemon_trainer as pt\
+                                        WHERE p.pokemon_id = pt.pokemon_id AND\
+                                            t.trainer_id = pt.trainer_id"
+
+DELETE_POKEMON_OF_TRAINER = "DELETE FROM pokemon_trainer\
+                             WHERE pokemon_id = (SELECT pokemon_id FROM pokemon WHERE name = '{pokemon_name}')\
+                             AND trainer_id = (SELECT trainer_id FROM trainer WHERE name = '{trainer_name}')"

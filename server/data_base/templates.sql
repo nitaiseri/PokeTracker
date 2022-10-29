@@ -86,5 +86,21 @@ use poketracker;
 -- FROM num_pokes
 -- WHERE num = (SELECT MAX(num)
 --             from num_pokes)
-SELECT *
-FROM trainer
+
+
+-- SELECT p.name
+-- FROM (SELECT * FROM trainer WHERE name = "Loga") as t,
+--       (SELECT p.name, p.pokemon_id 
+--         FROM pokemon AS p, pokemon_type AS pt, type AS t
+--         WHERE t.name = "grass" AND 
+--               p.pokemon_id = pt.pokemon_id AND 
+--               pt.type_id = t.type_id) as p, 
+--         pokemon_trainer as pt
+-- WHERE p.pokemon_id = pt.pokemon_id AND 
+--       t.trainer_id = pt.trainer_id
+
+-- INsert into pokemon_trainer VALUES (1, 30);
+-- SELECT * 
+-- FROM pokemon_trainer
+
+-- DELETE FROM pokemon_trainer WHERE pokemon_id = (SELECT pokemon_id FROM pokemon WHERE name = "bulbasaur") AND trainer_id = (SELECT trainer_id FROM trainer WHERE name = "Nit")
