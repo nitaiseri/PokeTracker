@@ -1,11 +1,6 @@
-from urllib import request
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI
 from fastapi import Request, status, Response
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 import uvicorn
-import requests
 from data_base.db_manager import db_manager
 from data_base.dtos import Trainer
 
