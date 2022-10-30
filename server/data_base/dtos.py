@@ -24,8 +24,8 @@ class Pokemon:
 
 class Trainer:
     def __init__(self, trainer_object) -> None:
-        self.name = trainer_object.get("name")
-        self.town = trainer_object.get("town")  
+        self.name = trainer_object["name"]
+        self.town = trainer_object["town"]  
     
     def get_items(self):
         return self.name, self.towm

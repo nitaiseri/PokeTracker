@@ -104,3 +104,7 @@ CHECK_OWNERSHIP = "SELECT *\
 UPDATE_POKEMON_ID_IN_ONERSHIP = "UPDATE pokemon_trainer\
                                 SET pokemon_id = {new_id}\
                                 WHERE pokemon_id={old_id} AND trainer_id={trainer_id}"
+
+GET_TYPE_ID_BY_NAME = "SELECT type_id\
+                        FROM type\
+                        WHERE name='{type_name}'"
