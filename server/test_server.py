@@ -14,7 +14,7 @@ client = TestClient(app)
 # Get pokemons by type eevee
 def test_get_pokemons_by_type():
     type = "normal"
-    response = client.get(f"/pokemons/?type={type}")
+    response = client.get(f"/pokemons?type={type}")
     response_data = response.json()
     data = response_data
     assert {"name": "eevee"} in data
@@ -24,9 +24,9 @@ def test_get_pokemons_by_type():
 def test_get_pokemons_by_types():
     type1 = "bug"
     type2 = "flying"
-    response1 = client.get(f"/pokemons/?type={type1}")
+    response1 = client.get(f"/pokemons?type={type1}")
     response_data1 = response1.json()
-    response2 = client.get(f"/pokemons/?type={type2}")
+    response2 = client.get(f"/pokemons?type={type2}")
     response_data2 = response2.json()
     assert {"name": "yanma"} in response_data1 and response_data2
 
@@ -42,9 +42,9 @@ def test_get_pokemon_by_name():
 def test_pokemons_by_types():
     type1 = "grass"
     type2 = "poison"
-    response1 = client.get(f"/pokemons/?type={type1}")
+    response1 = client.get(f"/pokemons?type={type1}")
     response_data1 = response1.json()
-    response2 = client.get(f"/pokemons/?type={type2}")
+    response2 = client.get(f"/pokemons?type={type2}")
     response_data2 = response2.json()
     assert {"name": "venusaur"} in response_data1 and response_data2
 
@@ -72,7 +72,6 @@ def test_get_owner_by_pokemon():
 
 
 #Delete Pokemon of a Trainer
-def delete_pokemon_of_trainer():
-    pokemons=[{"name":"venusaur"},{"name":"charmander"},{"name":"squirtle"},{"name":"pidgeot"},{"name":"raticate"},{"name":"spearow"},{"name":"pikachu"},{"name":"raichu"},{"name":"nidoran-f"},{"name":"nidorina"},{"name":"nidoking"},{"name":"oddish"},{"name":"vileplume"},{"name":"diglett"},{"name":"poliwag"},{"name":"machamp"},{"name":"hitmonlee"},{"name":"magikarp"},{"name":"kabutops"}]
-  
-    pass
+# def test_delete_pokemon_of_trainer():
+#     pokemons=[{"name":"venusaur"},{"name":"charmander"},{"name":"squirtle"},{"name":"pidgeot"},{"name":"raticate"},{"name":"spearow"},{"name":"pikachu"},{"name":"raichu"},{"name":"nidoran-f"},{"name":"nidorina"},{"name":"nidoking"},{"name":"oddish"},{"name":"vileplume"},{"name":"diglett"},{"name":"poliwag"},{"name":"machamp"},{"name":"hitmonlee"},{"name":"magikarp"},{"name":"kabutops"}]
+#     pass

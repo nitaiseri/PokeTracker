@@ -42,7 +42,7 @@ async def add_trainer(trainer: Request, respone: Response):
         pass
 
 
-@app.get('/trainers/', status_code=status.HTTP_200_OK)  # Query parameter - Get
+@app.get('/trainers', status_code=status.HTTP_200_OK)  # Query parameter - Get
 def get_trainers_by_pokemon(pokemon_name):
     trainers = db_manager.get_trainers_name_by_pokemon_name(pokemon_name)
     return trainers
