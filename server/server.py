@@ -18,16 +18,13 @@ def get_pokemon_by_name(pokemon_name):
     pokemon_details = db_manager.get_pokemon(pokemon_name)
     return pokemon_details
 
-# TODO: Wrong parameter should raise error or return empty list.
-
-
-# Query parameter -Get pokemon by prameters
-@app.get('/pokemons/', status_code=status.HTTP_200_OK)
+# TODO: Wrong parameter should raise error or return empty list. 
+@app.get('/pokemons', status_code=status.HTTP_200_OK) # Query parameter -Get pokemon by prameters
 def get_pokemons_by_parameters(type=None, trainer_name=None):
     pokemons = []
     if trainer_name is not None and type is not None:
-        pass
-    if trainer_name is not None:
+        pokemons = db_manager.get_pokemons_name_by_trainer_name_and_type(trainer_name, type)
+    elif trainer_name is not None:
         pokemons = db_manager.get_pokemons_name_by_trainer_name(trainer_name)
     elif type is not None:
         pokemons = db_manager.get_pokemons_by_type(type)
@@ -50,17 +47,13 @@ def get_trainers_by_pokemon(pokemon_name):
     trainers = db_manager.get_trainers_name_by_pokemon_name(pokemon_name)
     return trainers
 
-
-# Make evolve of a spesific pokemon of a spesific trainer.
-@app.patch('/pokemons/evolve/', status_code=status.HTTP_200_OK)
+@app.patch('/pokemons/evolve', status_code=status.HTTP_200_OK)  # Make evolve of a spesific pokemon of a spesific trainer.
 def evolve_pokemon_by_trainer(trainer, pokemon):
-    pass
+    db_manager.evolve_pokemon(trainer, pokemon)
 
-
-# Delete a spesific pokemon of a spesific trainer.
-@app.delete('/pokemons/{pokemon_name}/trainers/{trainer_name}', status_code=status.HTTP_200_OK)
-def delete_pokemon_of_trainer(pokemon_name):
-    pass
+@app.delete('/pokemons/{pokemon_name}/trainers/{trainer_name}', status_code=status.HTTP_200_OK)  # Delete a spesific pokemon of a spesific trainer.
+def delete_pokemon_of_trainer(pokemon_name, trainer_name):
+    return db_manager.delete_pokemon_of_specific_trainer(pokemon_name, trainer_name)
 
 
 if __name__ == "__main__":

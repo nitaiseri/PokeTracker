@@ -16,3 +16,5 @@ JSON_PATH = "server/data_base/pokemons.json"
 POKE_API_URL = "https://pokeapi.co/api/v2/"
 TYPES_URL = POKE_API_URL + "type"
 POKEMONS_URL = POKE_API_URL + "pokemon/?limit=1154/"
+POKEMON_URL = POKE_API_URL + "pokemon/"
+
