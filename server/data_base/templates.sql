@@ -100,7 +100,14 @@ use poketracker;
 --       t.trainer_id = pt.trainer_id
 
 -- INsert into pokemon_trainer VALUES (1, 30);
--- SELECT * 
--- FROM pokemon_trainer
+SELECT * 
+FROM pokemon_trainer
+
+
+
+-- SELECT trainer_id
+-- FROM trainer
+-- WHERE name = 'Loga'
 
 -- DELETE FROM pokemon_trainer WHERE pokemon_id = (SELECT pokemon_id FROM pokemon WHERE name = "bulbasaur") AND trainer_id = (SELECT trainer_id FROM trainer WHERE name = "Nit")
+

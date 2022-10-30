@@ -72,6 +72,15 @@ class DB_Manager:
             if return_value:
                 self.connection.commit()
         return return_value
-
-
+    
+    def evolve_pokemon(self, trainer, pokemon):
+        trainer_id = validate_trainer_name(self.connection, trainer)
+        pokemon_id = validate_pokemon_name(self.connection, pokemon)
+        if not validate_ownership(self.connection, trainer_id, pokemon_id):
+            return
+        new_pokemon_id = get_pokemon_next_generation_id(pokemon_id)
+        with self.connection.cursor() as cursor:
+            cursor.execute(UPDATE_POKEMON_ID_IN_ONERSHIP.format(new_id=new_pokemon_id, old_id=pokemon_id, trainer_id=trainer_id))
+        self.connection.commit()
+        
 db_manager = DB_Manager()

@@ -49,9 +49,9 @@ def get_trainers_by_pokemon(pokemon_name):
     trainers = db_manager.get_trainers_name_by_pokemon_name(pokemon_name)
     return trainers
 
-@app.patch('/pokemons/evolve/', status_code=status.HTTP_200_OK)  # Make evolve of a spesific pokemon of a spesific trainer.
+@app.patch('/pokemons/evolve', status_code=status.HTTP_200_OK)  # Make evolve of a spesific pokemon of a spesific trainer.
 def evolve_pokemon_by_trainer(trainer, pokemon):
-    pass
+    db_manager.evolve_pokemon(trainer, pokemon)
 
 @app.delete('/pokemons/{pokemon_name}/trainers/{trainer_name}', status_code=status.HTTP_200_OK)  # Delete a spesific pokemon of a spesific trainer.
 def delete_pokemon_of_trainer(pokemon_name, trainer_name):

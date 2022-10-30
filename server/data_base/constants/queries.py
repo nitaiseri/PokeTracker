@@ -88,3 +88,19 @@ SELECT_POKEMONS_BY_TRAINER_AND_TYPE = "SELECT p.name\
 DELETE_POKEMON_OF_TRAINER = "DELETE FROM pokemon_trainer\
                              WHERE pokemon_id = (SELECT pokemon_id FROM pokemon WHERE name = '{pokemon_name}')\
                              AND trainer_id = (SELECT trainer_id FROM trainer WHERE name = '{trainer_name}')"
+
+GET_POKEMOM_ID_BY_NAME = "SELECT pokemon_id\
+                        FROM pokemon\
+                        WHERE name = '{pokemon_name}'"
+
+GET_TRAINER_ID_BY_NAME = "SELECT trainer_id\
+                            FROM trainer\
+                            WHERE name = '{trainer_name}'"
+
+CHECK_OWNERSHIP = "SELECT *\
+                    FROM pokemon_trainer\
+                    WHERE pokemon_id = {pokemon_id} and trainer_id = {trainer_id}"
+
+UPDATE_POKEMON_ID_IN_ONERSHIP = "UPDATE pokemon_trainer\
+                                SET pokemon_id = {new_id}\
+                                WHERE pokemon_id={old_id} AND trainer_id={trainer_id}"
