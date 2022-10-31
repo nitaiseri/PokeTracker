@@ -1,8 +1,10 @@
 from urllib import response
 from fastapi.testclient import TestClient
-from unittest import mock
+from unittest import mock as mock_patch
+from fastapi import HTTPException
 from server import app
 import functools
+
 client = TestClient(app)
 
 # Get pokemons by type eevee
@@ -26,8 +28,6 @@ def test_get_pokemons_by_types():
     assert {"name": "yanma"} in response_data1 and response_data2
 
 # Get pokemons by name
-
-
 def test_get_pokemon_by_name():
     pokemone_name = "venusaur"
     response = client.get(f"/pokemons/{pokemone_name}")
@@ -76,7 +76,7 @@ def test_get_owner_by_pokemon():
 def test_evolve_max_evolvment():
     trainer_name = "Whitney"
     pokemone_name = "venusaur"
-    response = client.get(
+    response = client.patch(
         f"/pokemons/evolve?pokemon_name={pokemone_name}&trainer_name={trainer_name}")
     response_data = response.json()
     assert response_data["detail"] == F"{pokemone_name} cannot evolve. He is already the best version of itself."
@@ -85,17 +85,17 @@ def test_evolve_max_evolvment():
 def test_evolve_not_exist():
     trainer_name = "Archie"
     pokemone_name = "spearow"
-    response = client.get(
+    response = client.patch(
         f"/pokemons/evolve?pokemon_name={pokemone_name}&trainer_name={trainer_name}")
     response_data = response.json()
     assert response_data["detail"] == F"{trainer_name} does not own {pokemone_name}."
 
 # Delete Pokemon of a Trainer
-
-
-def test_delete_pokemon_of_trainer():
+@mock_patch('data_base.db_manager.delete_pokemon_of_specific_trainer')
+def test_delete_pokemon_of_trainer(delete_pokemon_of_specific_trainer):
+    delete_pokemon_of_specific_trainer.side_effect = HTTPException
     pokemon_name = "venusaur"
-    trainer_name = "Archie"
+    trainer_name = "Nit"
     deleted_pokemon = {"name": "venusaur"}
     pokemons = [{"name": "venusaur"}, {"name": "charmander"}, {"name": "squirtle"}, {"name": "pidgeot"}, {"name": "raticate"}, {"name": "spearow"}, {"name": "pikachu"}, {"name": "raichu"}, {"name": "nidoran-f"},
                 {"name": "nidorina"}, {"name": "nidoking"}, {"name": "oddish"}, {"name": "vileplume"}, {"name": "diglett"}, {"name": "poliwag"}, {"name": "machamp"}, {"name": "hitmonlee"}, {"name": "magikarp"}, {"name": "kabutops"}]

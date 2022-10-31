@@ -93,7 +93,7 @@ class DB_Manager:
         if not trainer_id or not pokemon_id:
             raise HTTPException(status_code=400, detail="No such trainer or pokemon")
         if not validate_ownership(self.connection, trainer_id, pokemon_id):
-            raise HTTPException(status_code=400, detail=f"{trainer} does not own {pokemon}")
+            raise HTTPException(status_code=400, detail=f"{trainer} does not own {pokemon}.")
         new_pokemon_id = get_pokemon_next_generation_id(pokemon_id)
         if pokemon_id == new_pokemon_id:
             raise HTTPException(status_code=400, detail=f"{pokemon} cannot evolve. He is already the best version of itself.")

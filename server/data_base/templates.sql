@@ -101,7 +101,7 @@ use poketracker;
 
 -- INsert into pokemon_trainer VALUES (1, 30);
 SELECT * 
-FROM pokemon
+FROM pokemon_trainer
 
 
 -- SELECT trainer_id
