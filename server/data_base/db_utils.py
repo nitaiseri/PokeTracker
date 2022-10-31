@@ -3,8 +3,6 @@ import requests
 from .constants.consts import *
 from fastapi import HTTPException
 
-# def parse_return_values_from_db()
-
 def create_insert_query(table_name, rows):
     query = f'INSERT INTO {table_name} VALUES'
     for row in rows:
