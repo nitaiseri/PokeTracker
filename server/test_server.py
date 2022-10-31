@@ -7,7 +7,6 @@ client = TestClient(app)
 
 # Get pokemons by type eevee
 
-
 def test_get_pokemons_by_type():
     type = "normal"
     response = client.get(f"/pokemons?type={type}")
@@ -74,19 +73,29 @@ def test_get_owner_by_pokemon():
 
 
 # evolve Pokemon
-def test_evolve():
+def test_evolve_max_evolvment():
     trainer_name = "Whitney"
-    pokemone_name = "pinsir"
+    pokemone_name = "venusaur"
     response = client.get(
         f"/pokemons/evolve?pokemon_name={pokemone_name}&trainer_name={trainer_name}")
     response_data = response.json()
-    assert True
+    assert response_data["detail"] == F"{pokemone_name} cannot evolve. He is already the best version of itself."
 
+
+def test_evolve_not_exist():
+    trainer_name = "Archie"
+    pokemone_name = "spearow"
+    response = client.get(
+        f"/pokemons/evolve?pokemon_name={pokemone_name}&trainer_name={trainer_name}")
+    response_data = response.json()
+    assert response_data["detail"] == F"{trainer_name} does not own {pokemone_name}."
 
 # Delete Pokemon of a Trainer
+
+
 def test_delete_pokemon_of_trainer():
     pokemon_name = "venusaur"
-    trainer_name = "Whitney"
+    trainer_name = "Archie"
     deleted_pokemon = {"name": "venusaur"}
     pokemons = [{"name": "venusaur"}, {"name": "charmander"}, {"name": "squirtle"}, {"name": "pidgeot"}, {"name": "raticate"}, {"name": "spearow"}, {"name": "pikachu"}, {"name": "raichu"}, {"name": "nidoran-f"},
                 {"name": "nidorina"}, {"name": "nidoking"}, {"name": "oddish"}, {"name": "vileplume"}, {"name": "diglett"}, {"name": "poliwag"}, {"name": "machamp"}, {"name": "hitmonlee"}, {"name": "magikarp"}, {"name": "kabutops"}]
