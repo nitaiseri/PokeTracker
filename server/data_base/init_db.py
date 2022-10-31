@@ -8,7 +8,7 @@ import json
 import requests
 from fastapi import HTTPException
 
-db_connection = connection = pymysql.connect(
+db_connection = pymysql.connect(
             host="localhost",
             user="root",
             password="",
@@ -138,7 +138,6 @@ def run():
     create_db(data_base_name = DB_NAME)
     execute_queries(queries = TABLES_CREATOR_QUERIES)
     init_tables()
-
 
 if __name__ == "__main__":
     run()

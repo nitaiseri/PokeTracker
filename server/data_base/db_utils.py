@@ -23,6 +23,10 @@ def validate_pokemon_name(connection, pokemon_name):
         if return_value:
             return cursor.fetchall()[0]["pokemon_id"]
         return return_value
+    
+def validate_type(connection, type):
+    with connection.cursor() as cursor:
+        return cursor.execute(GET_TYPE_ID_BY_NAME.format(type_name=type))
 
 def validate_ownership(connection, trainer_id, pokemon_id):
     with connection.cursor() as cursor:
