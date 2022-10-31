@@ -1,5 +1,4 @@
 import pymysql
-import os
 from data_base.constants.consts import *
 from data_base.constants.queries import *
 from data_base.db_utils import *
@@ -78,18 +77,26 @@ class DB_Manager:
             return cursor.fetchone()["max_id"] + 1
     
     def delete_pokemon_of_specific_trainer(self, pokemon_name, trainer_name):
+        if not validate_trainer_name(self.connection, trainer_name) or not validate_pokemon_name(self.connection, pokemon_name):
+            raise HTTPException(status_code=400, detail="No such trainer or pokemon")
         with self.connection.cursor() as cursor:
             return_value = cursor.execute(DELETE_POKEMON_OF_TRAINER.format(pokemon_name=pokemon_name, trainer_name=trainer_name))
             if return_value:
                 self.connection.commit()
-        return return_value
+                return return_value
+            raise HTTPException(status_code=400, detail="This trainer does not own this pokemon.")
+
     
     def evolve_pokemon(self, trainer, pokemon):
         trainer_id = validate_trainer_name(self.connection, trainer)
         pokemon_id = validate_pokemon_name(self.connection, pokemon)
+        if not trainer_id or not pokemon_id:
+            raise HTTPException(status_code=400, detail="No such trainer or pokemon")
         if not validate_ownership(self.connection, trainer_id, pokemon_id):
-            return
+            raise HTTPException(status_code=400, detail=f"{trainer} does not own {pokemon}")
         new_pokemon_id = get_pokemon_next_generation_id(pokemon_id)
+        if pokemon_id == new_pokemon_id:
+            raise HTTPException(status_code=400, detail=f"{pokemon} cannot evolve. He is already the best version of itself.")
         with self.connection.cursor() as cursor:
             cursor.execute(UPDATE_POKEMON_ID_IN_ONERSHIP.format(new_id=new_pokemon_id, old_id=pokemon_id, trainer_id=trainer_id))
         self.connection.commit()

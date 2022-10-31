@@ -1,15 +1,10 @@
 from urllib import request
 from fastapi import FastAPI, HTTPException
 from json import JSONDecodeError
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Request, status, Response
 from fastapi.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 from pymysql.err import IntegrityError
 import uvicorn
-import requests
-import os
 from data_base.db_manager import db_manager
 from data_base.dtos import Trainer
 from server_utils import *
@@ -65,16 +60,19 @@ def get_trainers_by_pokemon(pokemon_name):
     trainers = db_manager.get_trainers_name_by_pokemon_name(pokemon_name)
     return trainers
 
-
 # Make evolve of a spesific pokemon of a spesific trainer.
 @app.patch('/pokemons/evolve', status_code=status.HTTP_200_OK)
-def evolve_pokemon_by_trainer(trainer, pokemon):
-    db_manager.evolve_pokemon(trainer, pokemon)
+def evolve_pokemon_by_trainer(trainer_name, pokemon_name):
+    if not validate_input(pokemon_name) or not validate_input(trainer_name):
+        raise HTTPException(status_code=400, detail="Wrong parameter")
+    db_manager.evolve_pokemon(trainer_name, pokemon_name)
 
 
 # Delete a spesific pokemon of a spesific trainer.
 @app.delete('/pokemons/{pokemon_name}/trainers/{trainer_name}', status_code=status.HTTP_200_OK)
 def delete_pokemon_of_trainer(pokemon_name, trainer_name):
+    if not validate_input(pokemon_name) or not validate_input(trainer_name):
+        raise HTTPException(status_code=400, detail="Wrong parameter")
     return db_manager.delete_pokemon_of_specific_trainer(pokemon_name, trainer_name)
 
 
